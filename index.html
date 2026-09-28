@@ -187,6 +187,23 @@
   .badge-skip{background:rgba(74,85,104,0.3);color:var(--muted);}
   .badge-practical{background:rgba(64,196,255,0.1);color:var(--blue);}
 
+  /* LINK BUTTONS */
+  .topic-links {
+    display: flex; gap: 8px; margin-top: 8px;
+  }
+  .topic-btn {
+    font-size: 10px; font-weight: 500;
+    text-decoration: none; padding: 4px 10px;
+    border-radius: 4px;
+    color: var(--text); background: var(--surface2);
+    border: 1px solid var(--border2);
+    transition: .2s;
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .topic-btn:hover { background: var(--border); }
+  .topic-btn.web-btn:hover { border-color: var(--blue); color: var(--blue); }
+  .topic-btn.yt-btn:hover { border-color: var(--red); color: var(--red); }
+
   /* RESET */
   .reset-btn{
     font-family:'IBM Plex Mono',monospace;font-size:11px;
@@ -496,40 +513,58 @@ function renderSection(sid){
   updateSectionBar(SECTIONS.find(s=>s.id===sid));
 }
 
+function getSlug(name) {
+  return name.toLowerCase()
+             .replace(/\\+/g, '') // remove plus
+             .replace(/[^a-z0-9\\s-]/g, '') // remove special chars
+             .trim()
+             .replace(/\\s+/g, '-');
+}
+function getMesserLink(name) {
+  return 'https://www.professormesser.com/security-plus/sy0-701/sy0-701-video/' + getSlug(name) + '/';
+}
+function getYTLink(name) {
+  return 'https://www.youtube.com/results?search_query=' + encodeURIComponent('Professor Messer SY0-701 ' + name);
+}
+
 function buildUI(){
   const main=document.getElementById('main');
   main.innerHTML='';
   SECTIONS.forEach(sec=>{
     const div=document.createElement('div');
     div.className='section';
-    div.innerHTML=`
-      <div class="section-header" id="sh_${sec.id}" onclick="toggleSection('${sec.id}')">
-        <div class="section-icon ${sec.iconClass}">${sec.emoji}</div>
+    div.innerHTML=\`
+      <div class="section-header" id="sh_\${sec.id}" onclick="toggleSection('\${sec.id}')">
+        <div class="section-icon \${sec.iconClass}">\${sec.emoji}</div>
         <div class="section-title-wrap">
-          <div class="section-title">${sec.title}</div>
-          <div class="section-subtitle">${sec.sub}</div>
+          <div class="section-title">\${sec.title}</div>
+          <div class="section-subtitle">\${sec.sub}</div>
         </div>
-        <div class="section-prog" id="secprog_${sec.id}">0/${sec.topics.length}</div>
-        <div class="chevron" id="chev_${sec.id}">⌄</div>
+        <div class="section-prog" id="secprog_\${sec.id}">0/\${sec.topics.length}</div>
+        <div class="chevron" id="chev_\${sec.id}">⌄</div>
       </div>
-      <div class="sec-track"><div class="sec-fill ${sec.fillClass}" id="secbar_${sec.id}" style="width:0%"></div></div>
-      <div class="topics-grid" id="grid_${sec.id}">
-        ${sec.topics.map(t=>`
-          <div class="topic-card" data-section="${sec.id}" data-topic="${t.id}" onclick="toggle('${t.id}')">
+      <div class="sec-track"><div class="sec-fill \${sec.fillClass}" id="secbar_\${sec.id}" style="width:0%"></div></div>
+      <div class="topics-grid" id="grid_\${sec.id}">
+        \${sec.topics.map(t=>\`
+          <div class="topic-card" data-section="\${sec.id}" data-topic="\${t.id}" onclick="toggle('\${t.id}')">
             <div class="checkbox"></div>
             <div class="topic-info">
-              <div class="topic-name">${t.name}</div>
+              <div class="topic-name">\${t.name}</div>
               <div class="topic-meta">
-                <span class="topic-code">${t.code}</span>
-                <span class="topic-dur">⏱ ${t.dur}</span>
-                ${t.must?'<span class="badge badge-must">MUST WATCH</span>':'<span class="badge badge-skip">SKIP NOW</span>'}
-                ${t.practical?'<span class="badge badge-practical">PRACTICAL</span>':''}
+                <span class="topic-code">\${t.code}</span>
+                <span class="topic-dur">⏱ \${t.dur}</span>
+                \${t.must?'<span class="badge badge-must">MUST WATCH</span>':'<span class="badge badge-skip">SKIP NOW</span>'}
+                \${t.practical?'<span class="badge badge-practical">PRACTICAL</span>':''}
+              </div>
+              <div class="topic-links">
+                <a href="\${getMesserLink(t.name)}" target="_blank" class="topic-btn web-btn" onclick="event.stopPropagation()">📝 Web Transcript</a>
+                <a href="\${getYTLink(t.name)}" target="_blank" class="topic-btn yt-btn" onclick="event.stopPropagation()">▶️ YouTube Video</a>
               </div>
             </div>
           </div>
-        `).join('')}
+        \`).join('')}
       </div>
-    `;
+    \`;
     main.appendChild(div);
   });
 }
