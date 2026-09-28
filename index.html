@@ -515,10 +515,10 @@ function renderSection(sid){
 
 function getSlug(name) {
   return name.toLowerCase()
-             .replace(/\\+/g, '') // remove plus
-             .replace(/[^a-z0-9\\s-]/g, '') // remove special chars
+             .replace(/\+/g, '') 
+             .replace(/[^a-z0-9\s-]/g, '') 
              .trim()
-             .replace(/\\s+/g, '-');
+             .replace(/\s+/g, '-');
 }
 function getMesserLink(name) {
   return 'https://www.professormesser.com/security-plus/sy0-701/sy0-701-video/' + getSlug(name) + '/';
@@ -533,38 +533,38 @@ function buildUI(){
   SECTIONS.forEach(sec=>{
     const div=document.createElement('div');
     div.className='section';
-    div.innerHTML=\`
-      <div class="section-header" id="sh_\${sec.id}" onclick="toggleSection('\${sec.id}')">
-        <div class="section-icon \${sec.iconClass}">\${sec.emoji}</div>
+    div.innerHTML= `
+      <div class="section-header" id="sh_${sec.id}" onclick="toggleSection('${sec.id}')">
+        <div class="section-icon ${sec.iconClass}">${sec.emoji}</div>
         <div class="section-title-wrap">
-          <div class="section-title">\${sec.title}</div>
-          <div class="section-subtitle">\${sec.sub}</div>
+          <div class="section-title">${sec.title}</div>
+          <div class="section-subtitle">${sec.sub}</div>
         </div>
-        <div class="section-prog" id="secprog_\${sec.id}">0/\${sec.topics.length}</div>
-        <div class="chevron" id="chev_\${sec.id}">⌄</div>
+        <div class="section-prog" id="secprog_${sec.id}">0/${sec.topics.length}</div>
+        <div class="chevron" id="chev_${sec.id}">⌄</div>
       </div>
-      <div class="sec-track"><div class="sec-fill \${sec.fillClass}" id="secbar_\${sec.id}" style="width:0%"></div></div>
-      <div class="topics-grid" id="grid_\${sec.id}">
-        \${sec.topics.map(t=>\`
-          <div class="topic-card" data-section="\${sec.id}" data-topic="\${t.id}" onclick="toggle('\${t.id}')">
+      <div class="sec-track"><div class="sec-fill ${sec.fillClass}" id="secbar_${sec.id}" style="width:0%"></div></div>
+      <div class="topics-grid" id="grid_${sec.id}">
+        ${sec.topics.map(t=> `
+          <div class="topic-card" data-section="${sec.id}" data-topic="${t.id}" onclick="toggle('${t.id}')">
             <div class="checkbox"></div>
             <div class="topic-info">
-              <div class="topic-name">\${t.name}</div>
+              <div class="topic-name">${t.name}</div>
               <div class="topic-meta">
-                <span class="topic-code">\${t.code}</span>
-                <span class="topic-dur">⏱ \${t.dur}</span>
-                \${t.must?'<span class="badge badge-must">MUST WATCH</span>':'<span class="badge badge-skip">SKIP NOW</span>'}
-                \${t.practical?'<span class="badge badge-practical">PRACTICAL</span>':''}
+                <span class="topic-code">${t.code}</span>
+                <span class="topic-dur">⏱ ${t.dur}</span>
+                ${t.must ? '<span class="badge badge-must">MUST WATCH</span>' : '<span class="badge badge-skip">SKIP NOW</span>'}
+                ${t.practical ? '<span class="badge badge-practical">PRACTICAL</span>' : ''}
               </div>
               <div class="topic-links">
-                <a href="\${getMesserLink(t.name)}" target="_blank" class="topic-btn web-btn" onclick="event.stopPropagation()">📝 Web Transcript</a>
-                <a href="\${getYTLink(t.name)}" target="_blank" class="topic-btn yt-btn" onclick="event.stopPropagation()">▶️ YouTube Video</a>
+                <a href="${getMesserLink(t.name)}" target="_blank" class="topic-btn web-btn" onclick="event.stopPropagation()">📝 Web Transcript</a>
+                <a href="${getYTLink(t.name)}" target="_blank" class="topic-btn yt-btn" onclick="event.stopPropagation()">▶️ YouTube Video</a>
               </div>
             </div>
           </div>
-        \`).join('')}
+        `).join('')}
       </div>
-    \`;
+    `;
     main.appendChild(div);
   });
 }
