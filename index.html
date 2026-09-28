@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CompTIA Security+ SY0-701 — Progress Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #151820;
+    --surface2: #1a1e2a;
+    --border: #1f2430;
+    --border2: #252b3a;
+    --green: #00e676;
+    --green-dim: rgba(0,230,118,0.10);
+    --red: #ff4444;
+    --yellow: #ffd740;
+    --blue: #40c4ff;
+    --purple: #b39ddb;
+    --muted: #4a5568;
+    --muted2: #2d3748;
+    --text: #c9d1d9;
+    --white: #e6edf3;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top,0px);
+    padding-bottom: env(safe-area-inset-bottom,0px);
+  }
+  *,*::before,*::after{box-sizing:inherit;margin:0;padding:0;}
+  html,body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100%;}
+  body{padding-bottom:60px;}
+
+  /* TOP BAR */
+  .topbar{
+    background:var(--surface);
+    border-bottom:1px solid var(--border);
+    padding:14px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position:sticky;top:0;z-index:100;
+  }
+  .topbar-left{display:flex;align-items:center;gap:12px;}
+  .cert-badge{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    color:var(--blue);
+    border:1px solid rgba(64,196,255,0.3);
+    padding:3px 8px;border-radius:2px;
+    background:rgba(64,196,255,0.07);
+  }
+  .topbar-title{font-size:14px;font-weight:600;color:var(--white);}
+  .topbar-sub{font-size:11px;color:var(--muted);}
+
+  /* HERO */
+  .hero{
+    background:linear-gradient(135deg,#0d0f14 0%,#0a1628 100%);
+    border-bottom:1px solid var(--border);
+    padding:40px 20px 32px;
+    text-align:center;
+  }
+  .hero h1{font-size:clamp(22px,4vw,36px);font-weight:700;color:var(--white);margin-bottom:8px;}
+  .hero h1 span{color:var(--blue);}
+  .hero p{font-size:13px;color:var(--muted);max-width:480px;margin:0 auto;}
+
+  /* GLOBAL PROGRESS */
+  .global-bar-wrap{max-width:860px;margin:24px auto 0;padding:0 20px;}
+  .global-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+  .stat-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:14px 16px;
+    text-align:center;
+  }
+  .stat-num{font-family:'IBM Plex Mono',monospace;font-size:24px;font-weight:600;color:var(--white);}
+  .stat-label{font-size:11px;color:var(--muted);margin-top:3px;}
+  .global-track{height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+  .global-fill{height:100%;background:linear-gradient(90deg,#00e676,#40c4ff);border-radius:4px;transition:width .4s ease;}
+
+  /* FILTER BAR */
+  .filter-bar{
+    max-width:860px;margin:20px auto 0;padding:0 20px;
+    display:flex;gap:8px;flex-wrap:wrap;
+  }
+  .filter-btn{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;padding:5px 12px;border-radius:2px;
+    border:1px solid var(--border2);
+    background:var(--surface);color:var(--muted);
+    cursor:pointer;transition:.15s;
+  }
+  .filter-btn:hover{border-color:var(--blue);color:var(--blue);}
+  .filter-btn.active{background:rgba(64,196,255,0.1);border-color:var(--blue);color:var(--blue);}
+  .filter-btn.priority{background:rgba(255,215,64,0.07);border-color:rgba(255,215,64,0.3);color:var(--yellow);}
+  .filter-btn.priority.active{background:rgba(255,215,64,0.15);}
+
+  /* MAIN */
+  .container{max-width:860px;margin:0 auto;padding:24px 20px;}
+
+  /* SECTION */
+  .section{margin-bottom:32px;}
+  .section-header{
+    display:flex;align-items:center;gap:12px;
+    margin-bottom:14px;
+    cursor:pointer;user-select:none;
+  }
+  .section-icon{
+    width:32px;height:32px;border-radius:6px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px;flex-shrink:0;
+  }
+  .sec1{background:rgba(64,196,255,0.12);}
+  .sec2{background:rgba(255,68,68,0.12);}
+  .sec3{background:rgba(179,157,219,0.12);}
+  .sec4{background:rgba(0,230,118,0.12);}
+  .sec5{background:rgba(255,215,64,0.12);}
+  .section-title-wrap{flex:1;}
+  .section-title{font-size:15px;font-weight:600;color:var(--white);}
+  .section-subtitle{font-size:12px;color:var(--muted);margin-top:2px;}
+  .section-prog{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;color:var(--muted);
+    white-space:nowrap;margin-left:auto;
+  }
+  .section-prog.done{color:var(--green);}
+  .chevron{font-size:12px;color:var(--muted);transition:.2s;}
+  .section-header.collapsed .chevron{transform:rotate(-90deg);}
+
+  /* SECTION PROGRESS BAR */
+  .sec-track{height:3px;background:var(--surface2);border-radius:2px;margin-bottom:12px;overflow:hidden;}
+  .sec-fill{height:100%;border-radius:2px;transition:width .3s;}
+  .fill-blue{background:var(--blue);}
+  .fill-red{background:var(--red);}
+  .fill-purple{background:var(--purple);}
+  .fill-green{background:var(--green);}
+  .fill-yellow{background:var(--yellow);}
+
+  /* TOPIC CARDS */
+  .topics-grid{display:flex;flex-direction:column;gap:6px;}
+  .topic-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:6px;
+    padding:12px 14px;
+    display:flex;align-items:flex-start;gap:12px;
+    cursor:pointer;transition:.15s;
+  }
+  .topic-card:hover{border-color:var(--border2);background:var(--surface2);}
+  .topic-card.checked{
+    border-color:rgba(0,230,118,0.25);
+    background:rgba(0,230,118,0.04);
+  }
+  .topic-card.hidden{display:none;}
+  .checkbox{
+    width:18px;height:18px;border-radius:3px;
+    border:1px solid var(--border2);
+    background:var(--surface2);
+    flex-shrink:0;margin-top:1px;
+    display:flex;align-items:center;justify-content:center;
+    transition:.15s;
+  }
+  .topic-card.checked .checkbox{
+    background:var(--green);border-color:var(--green);
+  }
+  .checkbox::after{
+    content:'';display:none;
+    width:5px;height:9px;
+    border:2px solid #0d0f14;border-top:none;border-left:none;
+    transform:rotate(45deg) translateY(-1px);
+  }
+  .topic-card.checked .checkbox::after{display:block;}
+  .topic-info{flex:1;min-width:0;}
+  .topic-name{font-size:13px;font-weight:500;color:var(--white);line-height:1.4;}
+  .topic-card.checked .topic-name{color:var(--muted);}
+  .topic-meta{display:flex;gap:8px;align-items:center;margin-top:5px;flex-wrap:wrap;}
+  .topic-code{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;color:var(--muted);
+  }
+  .topic-dur{font-size:11px;color:var(--muted);}
+  .badge{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:9px;padding:2px 6px;border-radius:2px;
+  }
+  .badge-must{background:rgba(0,230,118,0.12);color:var(--green);}
+  .badge-skip{background:rgba(74,85,104,0.3);color:var(--muted);}
+  .badge-practical{background:rgba(64,196,255,0.1);color:var(--blue);}
+
+  /* RESET */
+  .reset-btn{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;
+    padding:6px 14px;border-radius:2px;
+    border:1px solid var(--border2);
+    background:transparent;color:var(--muted);
+    cursor:pointer;transition:.15s;
+  }
+  .reset-btn:hover{border-color:var(--red);color:var(--red);}
+
+  @media(max-width:480px){
+    .global-stats{grid-template-columns:repeat(3,1fr);}
+    .stat-num{font-size:18px;}
+    .topbar-title{font-size:13px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="cert-badge">SY0-701</div>
+    <div>
+      <div class="topbar-title">Security+ Tracker</div>
+      <div class="topbar-sub">Professor Messer — 121 Videos</div>
+    </div>
+  </div>
+  <button class="reset-btn" onclick="resetAll()">Reset</button>
+</div>
+
+<div class="hero">
+  <h1>CompTIA <span>Security+</span> SY0-701</h1>
+  <p>Professor Messer playlist — marked for your cybersecurity learning path. Green = must watch, grey = can skip for now.</p>
+</div>
+
+<div class="global-bar-wrap">
+  <div class="global-stats">
+    <div class="stat-card">
+      <div class="stat-num" id="doneCount">0</div>
+      <div class="stat-label">Completed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="totalCount">0</div>
+      <div class="stat-label">Total Videos</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="pctCount">0%</div>
+      <div class="stat-label">Progress</div>
+    </div>
+  </div>
+  <div class="global-track"><div class="global-fill" id="globalFill" style="width:0%"></div></div>
+</div>
+
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="setFilter('all',this)">All</button>
+  <button class="filter-btn priority" onclick="setFilter('must',this)">✅ Must Watch</button>
+  <button class="filter-btn" onclick="setFilter('done',this)">Completed</button>
+  <button class="filter-btn" onclick="setFilter('todo',this)">Remaining</button>
+</div>
+
+<div class="container" id="main"></div>
+
+<script>
+const SECTIONS = [
+  {
+    id:'s0',title:'Section 0 — Introduction',sub:'How to pass the exam',
+    iconClass:'sec1',fillClass:'fill-blue',emoji:'🎯',
+    topics:[
+      {id:'s0_1',code:'0.1',name:'How to Pass Your SY0-701 Security+ Exam',dur:'10:06',must:true,practical:false},
+    ]
+  },
+  {
+    id:'s1',title:'Section 1 — General Security Concepts',sub:'Foundations, cryptography, change management',
+    iconClass:'sec1',fillClass:'fill-blue',emoji:'🔐',
+    topics:[
+      {id:'s1_1',code:'1.1',name:'Security Controls',dur:'11:48',must:true,practical:false},
+      {id:'s1_2',code:'1.2',name:'The CIA Triad',dur:'5:17',must:true,practical:false},
+      {id:'s1_3',code:'1.2',name:'Non-repudiation',dur:'7:57',must:true,practical:false},
+      {id:'s1_4',code:'1.2',name:'Authentication, Authorization, and Accounting (AAA)',dur:'9:03',must:true,practical:true},
+      {id:'s1_5',code:'1.2',name:'Gap Analysis',dur:'6:44',must:false,practical:false},
+      {id:'s1_6',code:'1.2',name:'Zero Trust',dur:'10:04',must:true,practical:false},
+      {id:'s1_7',code:'1.2',name:'Physical Security',dur:'8:17',must:false,practical:false},
+      {id:'s1_8',code:'1.2',name:'Deception and Disruption',dur:'4:30',must:true,practical:false},
+      {id:'s1_9',code:'1.3',name:'Change Management',dur:'11:22',must:false,practical:false},
+      {id:'s1_10',code:'1.3',name:'Technical Change Management',dur:'10:54',must:false,practical:false},
+      {id:'s1_11',code:'1.4',name:'Public Key Infrastructure (PKI)',dur:'9:08',must:true,practical:true},
+      {id:'s1_12',code:'1.4',name:'Encrypting Data',dur:'9:48',must:true,practical:false},
+      {id:'s1_13',code:'1.4',name:'Key Exchange',dur:'3:39',must:true,practical:false},
+      {id:'s1_14',code:'1.4',name:'Encryption Technologies',dur:'6:53',must:true,practical:false},
+      {id:'s1_15',code:'1.4',name:'Obfuscation',dur:'8:00',must:false,practical:false},
+      {id:'s1_16',code:'1.4',name:'Hashing and Digital Signatures',dur:'10:24',must:true,practical:false},
+      {id:'s1_17',code:'1.4',name:'Blockchain Technology',dur:'2:22',must:false,practical:false},
+      {id:'s1_18',code:'1.4',name:'Certificates',dur:'14:38',must:true,practical:true},
+    ]
+  },
+  {
+    id:'s2',title:'Section 2 — Threats, Vulnerabilities & Mitigations',sub:'Attacks, malware, exploits — most relevant to your work',
+    iconClass:'sec2',fillClass:'fill-red',emoji:'⚠️',
+    topics:[
+      {id:'s2_1',code:'2.1',name:'Threat Actors',dur:'10:23',must:true,practical:false},
+      {id:'s2_2',code:'2.2',name:'Common Threat Vectors',dur:'17:14',must:true,practical:true},
+      {id:'s2_3',code:'2.2',name:'Phishing',dur:'6:32',must:true,practical:true},
+      {id:'s2_4',code:'2.2',name:'Impersonation',dur:'5:52',must:true,practical:false},
+      {id:'s2_5',code:'2.2',name:'Watering Hole Attacks',dur:'4:12',must:true,practical:false},
+      {id:'s2_6',code:'2.2',name:'Other Social Engineering Attacks',dur:'3:29',must:true,practical:false},
+      {id:'s2_7',code:'2.3',name:'Memory Injections',dur:'2:39',must:true,practical:true},
+      {id:'s2_8',code:'2.3',name:'Buffer Overflows',dur:'3:37',must:true,practical:true},
+      {id:'s2_9',code:'2.3',name:'Race Conditions',dur:'4:58',must:false,practical:false},
+      {id:'s2_10',code:'2.3',name:'Malicious Updates',dur:'5:45',must:true,practical:true},
+      {id:'s2_11',code:'2.3',name:'Operating System Vulnerabilities',dur:'4:09',must:true,practical:false},
+      {id:'s2_12',code:'2.3',name:'SQL Injection',dur:'5:09',must:true,practical:true},
+      {id:'s2_13',code:'2.3',name:'Cross-site Scripting (XSS)',dur:'8:34',must:true,practical:true},
+      {id:'s2_14',code:'2.3',name:'Hardware Vulnerabilities',dur:'6:27',must:false,practical:false},
+      {id:'s2_15',code:'2.3',name:'Virtualization Vulnerabilities',dur:'5:29',must:false,practical:false},
+      {id:'s2_16',code:'2.3',name:'Cloud-specific Vulnerabilities',dur:'4:06',must:true,practical:true},
+      {id:'s2_17',code:'2.3',name:'Supply Chain Vulnerabilities',dur:'9:12',must:true,practical:true},
+      {id:'s2_18',code:'2.3',name:'Misconfiguration Vulnerabilities',dur:'7:09',must:true,practical:true},
+      {id:'s2_19',code:'2.3',name:'Mobile Device Vulnerabilities',dur:'3:23',must:true,practical:true},
+      {id:'s2_20',code:'2.3',name:'Zero-day Vulnerabilities',dur:'3:02',must:true,practical:true},
+      {id:'s2_21',code:'2.4',name:'An Overview of Malware',dur:'6:06',must:true,practical:true},
+      {id:'s2_22',code:'2.4',name:'Viruses and Worms',dur:'5:54',must:true,practical:false},
+      {id:'s2_23',code:'2.4',name:'Spyware and Bloatware',dur:'4:21',must:true,practical:false},
+      {id:'s2_24',code:'2.4',name:'Other Malware Types (keyloggers, rootkits)',dur:'7:32',must:true,practical:true},
+      {id:'s2_25',code:'2.4',name:'Physical Attacks',dur:'4:04',must:false,practical:false},
+      {id:'s2_26',code:'2.4',name:'Denial of Service (DoS/DDoS)',dur:'6:07',must:true,practical:false},
+      {id:'s2_27',code:'2.4',name:'DNS Attacks',dur:'8:57',must:true,practical:true},
+      {id:'s2_28',code:'2.4',name:'Wireless Attacks',dur:'7:55',must:true,practical:true},
+      {id:'s2_29',code:'2.4',name:'On-path Attacks (MITM)',dur:'5:30',must:true,practical:false},
+      {id:'s2_30',code:'2.4',name:'Replay Attacks',dur:'5:45',must:true,practical:false},
+      {id:'s2_31',code:'2.4',name:'Malicious Code',dur:'3:40',must:true,practical:true},
+      {id:'s2_32',code:'2.4',name:'Application Attacks',dur:'11:48',must:true,practical:true},
+      {id:'s2_33',code:'2.4',name:'Cryptographic Attacks',dur:'9:31',must:true,practical:false},
+      {id:'s2_34',code:'2.4',name:'Password Attacks',dur:'7:15',must:true,practical:true},
+      {id:'s2_35',code:'2.4',name:'Indicators of Compromise',dur:'10:59',must:true,practical:true},
+      {id:'s2_36',code:'2.5',name:'Segmentation and Access Control',dur:'6:06',must:true,practical:false},
+      {id:'s2_37',code:'2.5',name:'Mitigation Techniques',dur:'6:51',must:true,practical:false},
+      {id:'s2_38',code:'2.5',name:'Hardening Techniques',dur:'12:11',must:true,practical:true},
+    ]
+  },
+  {
+    id:'s3',title:'Section 3 — Security Architecture',sub:'Network design, data protection, resilience',
+    iconClass:'sec3',fillClass:'fill-purple',emoji:'🏗️',
+    topics:[
+      {id:'s3_1',code:'3.1',name:'Cloud Infrastructures',dur:'9:56',must:true,practical:true},
+      {id:'s3_2',code:'3.1',name:'Network Infrastructure Concepts',dur:'6:56',must:true,practical:false},
+      {id:'s3_3',code:'3.1',name:'Other Infrastructure Concepts (IoT, containers)',dur:'14:24',must:true,practical:false},
+      {id:'s3_4',code:'3.1',name:'Infrastructure Considerations',dur:'13:48',must:false,practical:false},
+      {id:'s3_5',code:'3.2',name:'Secure Infrastructures',dur:'5:54',must:true,practical:false},
+      {id:'s3_6',code:'3.2',name:'Intrusion Prevention (IPS)',dur:'5:14',must:true,practical:false},
+      {id:'s3_7',code:'3.2',name:'Network Appliances',dur:'11:56',must:true,practical:false},
+      {id:'s3_8',code:'3.2',name:'Port Security',dur:'3:50',must:false,practical:false},
+      {id:'s3_9',code:'3.2',name:'Firewall Types (UTM, NGFW, WAF)',dur:'8:00',must:true,practical:true},
+      {id:'s3_10',code:'3.2',name:'Secure Communication (VPN, SD-WAN, SASE)',dur:'9:55',must:true,practical:false},
+      {id:'s3_11',code:'3.3',name:'Data Types and Classifications',dur:'5:54',must:true,practical:false},
+      {id:'s3_12',code:'3.3',name:'States of Data (at rest, in transit, in use)',dur:'6:07',must:true,practical:false},
+      {id:'s3_13',code:'3.3',name:'Protecting Data',dur:'14:28',must:true,practical:false},
+      {id:'s3_14',code:'3.4',name:'Resiliency',dur:'9:42',must:false,practical:false},
+      {id:'s3_15',code:'3.4',name:'Capacity Planning',dur:'3:53',must:false,practical:false},
+      {id:'s3_16',code:'3.4',name:'Recovery Testing',dur:'5:18',must:false,practical:false},
+      {id:'s3_17',code:'3.4',name:'Backups',dur:'12:16',must:true,practical:true},
+      {id:'s3_18',code:'3.4',name:'Power Resiliency',dur:'4:02',must:false,practical:false},
+    ]
+  },
+  {
+    id:'s4',title:'Section 4 — Security Operations',sub:'Monitoring, scanning, IAM, incident response',
+    iconClass:'sec4',fillClass:'fill-green',emoji:'⚙️',
+    topics:[
+      {id:'s4_1',code:'4.1',name:'Secure Baselines',dur:'4:11',must:true,practical:false},
+      {id:'s4_2',code:'4.1',name:'Hardening Targets',dur:'10:11',must:true,practical:true},
+      {id:'s4_3',code:'4.1',name:'Securing Wireless and Mobile',dur:'8:58',must:true,practical:true},
+      {id:'s4_4',code:'4.1',name:'Wireless Security Settings',dur:'10:54',must:true,practical:false},
+      {id:'s4_5',code:'4.1',name:'Application Security',dur:'8:26',must:true,practical:true},
+      {id:'s4_6',code:'4.2',name:'Asset Management',dur:'8:37',must:false,practical:false},
+      {id:'s4_7',code:'4.3',name:'Vulnerability Scanning',dur:'7:45',must:true,practical:true},
+      {id:'s4_8',code:'4.3',name:'Threat Intelligence',dur:'4:46',must:true,practical:false},
+      {id:'s4_9',code:'4.3',name:'Penetration Testing',dur:'6:21',must:true,practical:true},
+      {id:'s4_10',code:'4.3',name:'Analyzing Vulnerabilities',dur:'10:29',must:true,practical:true},
+      {id:'s4_11',code:'4.3',name:'Vulnerability Remediation',dur:'8:45',must:true,practical:true},
+      {id:'s4_12',code:'4.4',name:'Security Monitoring',dur:'10:27',must:true,practical:true},
+      {id:'s4_13',code:'4.4',name:'Security Tools (SIEM, SCAP)',dur:'14:06',must:true,practical:false},
+      {id:'s4_14',code:'4.5',name:'Firewalls (rules, screen subnets)',dur:'11:31',must:true,practical:true},
+      {id:'s4_15',code:'4.5',name:'Web Filtering',dur:'10:00',must:true,practical:false},
+      {id:'s4_16',code:'4.5',name:'Operating System Security (AD, SELinux)',dur:'3:22',must:true,practical:true},
+      {id:'s4_17',code:'4.5',name:'Secure Protocols',dur:'4:47',must:true,practical:false},
+      {id:'s4_18',code:'4.5',name:'Email Security (SPF, DKIM, DMARC)',dur:'7:05',must:true,practical:true},
+      {id:'s4_19',code:'4.5',name:'Monitoring Data (DLP, file integrity)',dur:'7:25',must:true,practical:false},
+      {id:'s4_20',code:'4.5',name:'Endpoint Security (EDR, posture)',dur:'9:25',must:true,practical:false},
+      {id:'s4_21',code:'4.6',name:'Identity and Access Management (IAM)',dur:'12:46',must:true,practical:true},
+      {id:'s4_22',code:'4.6',name:'Access Controls',dur:'7:49',must:true,practical:false},
+      {id:'s4_23',code:'4.6',name:'Multifactor Authentication (MFA)',dur:'4:29',must:true,practical:true},
+      {id:'s4_24',code:'4.6',name:'Password Security',dur:'6:22',must:true,practical:true},
+      {id:'s4_25',code:'4.7',name:'Scripting and Automation',dur:'8:20',must:false,practical:false},
+      {id:'s4_26',code:'4.8',name:'Incident Response',dur:'9:14',must:true,practical:true},
+      {id:'s4_27',code:'4.8',name:'Incident Planning (tabletop, root cause)',dur:'6:50',must:true,practical:false},
+      {id:'s4_28',code:'4.8',name:'Digital Forensics',dur:'9:54',must:true,practical:true},
+      {id:'s4_29',code:'4.9',name:'Log Data',dur:'13:41',must:true,practical:true},
+    ]
+  },
+  {
+    id:'s5',title:'Section 5 — Security Program Management',sub:'Governance, compliance, risk — mostly skip for now',
+    iconClass:'sec5',fillClass:'fill-yellow',emoji:'📋',
+    topics:[
+      {id:'s5_1',code:'5.1',name:'Security Policies',dur:'11:02',must:false,practical:false},
+      {id:'s5_2',code:'5.1',name:'Security Standards',dur:'5:36',must:false,practical:false},
+      {id:'s5_3',code:'5.1',name:'Security Procedures',dur:'7:02',must:false,practical:false},
+      {id:'s5_4',code:'5.1',name:'Security Considerations',dur:'4:51',must:false,practical:false},
+      {id:'s5_5',code:'5.1',name:'Data Roles and Responsibilities',dur:'2:27',must:false,practical:false},
+      {id:'s5_6',code:'5.2',name:'Risk Management',dur:'3:30',must:false,practical:false},
+      {id:'s5_7',code:'5.2',name:'Risk Analysis',dur:'9:13',must:false,practical:false},
+      {id:'s5_8',code:'5.2',name:'Risk Management Strategies',dur:'3:12',must:false,practical:false},
+      {id:'s5_9',code:'5.2',name:'Business Impact Analysis',dur:'2:55',must:false,practical:false},
+      {id:'s5_10',code:'5.3',name:'Third-party Risk Assessment',dur:'11:36',must:false,practical:false},
+      {id:'s5_11',code:'5.3',name:'Agreement Types (SLA, MOU, NDA)',dur:'5:19',must:false,practical:false},
+      {id:'s5_12',code:'5.4',name:'Compliance',dur:'8:06',must:false,practical:false},
+      {id:'s5_13',code:'5.4',name:'Privacy',dur:'5:21',must:false,practical:false},
+      {id:'s5_14',code:'5.5',name:'Audits and Assessments',dur:'2:49',must:false,practical:false},
+      {id:'s5_15',code:'5.5',name:'Penetration Tests (audit perspective)',dur:'5:29',must:true,practical:true},
+      {id:'s5_16',code:'5.6',name:'Security Awareness',dur:'6:45',must:true,practical:false},
+      {id:'s5_17',code:'5.6',name:'User Training',dur:'4:31',must:false,practical:false},
+    ]
+  },
+];
+
+let state = {};
+let filter = 'all';
+let collapsed = {};
+
+function saveState(){try{localStorage.setItem('sy701_state',JSON.stringify(state));}catch(e){}}
+function loadState(){try{const d=localStorage.getItem('sy701_state');if(d)state=JSON.parse(d);}catch(e){state={};}}
+function saveSections(){try{localStorage.setItem('sy701_collapsed',JSON.stringify(collapsed));}catch(e){}}
+function loadSections(){try{const d=localStorage.getItem('sy701_collapsed');if(d)collapsed=JSON.parse(d);}catch(e){}}
+
+loadState();loadSections();
+
+function toggle(id){
+  state[id]=!state[id];
+  saveState();
+  render();
+}
+function toggleSection(sid){
+  collapsed[sid]=!collapsed[sid];
+  saveSections();
+  renderSection(sid);
+}
+function setFilter(f,btn){
+  filter=f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+function resetAll(){
+  if(!confirm('Reset all progress?')) return;
+  state={};collapsed={};saveState();saveSections();render();
+}
+
+function render(){
+  updateGlobal();
+  SECTIONS.forEach(s=>{
+    renderSection(s.id);
+    updateSectionBar(s);
+  });
+}
+
+function updateGlobal(){
+  let total=0,done=0;
+  SECTIONS.forEach(s=>s.topics.forEach(t=>{total++;if(state[t.id])done++;}));
+  document.getElementById('doneCount').textContent=done;
+  document.getElementById('totalCount').textContent=total;
+  document.getElementById('pctCount').textContent=Math.round(done/total*100)+'%';
+  document.getElementById('globalFill').style.width=(done/total*100)+'%';
+}
+
+function updateSectionBar(sec){
+  const el=document.getElementById('secbar_'+sec.id);
+  if(!el) return;
+  let total=sec.topics.length,done=sec.topics.filter(t=>state[t.id]).length;
+  el.style.width=(done/total*100)+'%';
+  const prog=document.getElementById('secprog_'+sec.id);
+  if(prog){
+    prog.textContent=done+'/'+total;
+    prog.className='section-prog'+(done===total?' done':'');
+  }
+}
+
+function renderSection(sid){
+  const cards=document.querySelectorAll(`[data-section="${sid}"]`);
+  const isCollapsed=collapsed[sid];
+  cards.forEach(card=>{
+    const id=card.dataset.topic;
+    const sec=SECTIONS.find(s=>s.id===sid);
+    const t=sec.topics.find(x=>x.id===id);
+    const checked=!!state[id];
+    let visible=true;
+    if(filter==='must') visible=t.must;
+    else if(filter==='done') visible=checked;
+    else if(filter==='todo') visible=!checked;
+    const inCollapsed=isCollapsed&&!checked;
+    card.className='topic-card'+(checked?' checked':'')+((!visible||inCollapsed)?' hidden':'');
+  });
+  const chevron=document.getElementById('chev_'+sid);
+  if(chevron) chevron.textContent=isCollapsed?'›':'⌄';
+  const header=document.getElementById('sh_'+sid);
+  if(header){
+    if(isCollapsed) header.classList.add('collapsed');
+    else header.classList.remove('collapsed');
+  }
+  updateSectionBar(SECTIONS.find(s=>s.id===sid));
+}
+
+function buildUI(){
+  const main=document.getElementById('main');
+  main.innerHTML='';
+  SECTIONS.forEach(sec=>{
+    const div=document.createElement('div');
+    div.className='section';
+    div.innerHTML=`
+      <div class="section-header" id="sh_${sec.id}" onclick="toggleSection('${sec.id}')">
+        <div class="section-icon ${sec.iconClass}">${sec.emoji}</div>
+        <div class="section-title-wrap">
+          <div class="section-title">${sec.title}</div>
+          <div class="section-subtitle">${sec.sub}</div>
+        </div>
+        <div class="section-prog" id="secprog_${sec.id}">0/${sec.topics.length}</div>
+        <div class="chevron" id="chev_${sec.id}">⌄</div>
+      </div>
+      <div class="sec-track"><div class="sec-fill ${sec.fillClass}" id="secbar_${sec.id}" style="width:0%"></div></div>
+      <div class="topics-grid" id="grid_${sec.id}">
+        ${sec.topics.map(t=>`
+          <div class="topic-card" data-section="${sec.id}" data-topic="${t.id}" onclick="toggle('${t.id}')">
+            <div class="checkbox"></div>
+            <div class="topic-info">
+              <div class="topic-name">${t.name}</div>
+              <div class="topic-meta">
+                <span class="topic-code">${t.code}</span>
+                <span class="topic-dur">⏱ ${t.dur}</span>
+                ${t.must?'<span class="badge badge-must">MUST WATCH</span>':'<span class="badge badge-skip">SKIP NOW</span>'}
+                ${t.practical?'<span class="badge badge-practical">PRACTICAL</span>':''}
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    main.appendChild(div);
+  });
+}
+
+buildUI();
+render();
+</script>
+</body>
+</html>
